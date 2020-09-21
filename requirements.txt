@@ -2,6 +2,3 @@ babel
 python-dateutil==2.6.0
 flask-moment
 flask-wtf
-
-venue = Venue(name=name, phone=phone, city=city, state=state, adress=address, image_link=image_link, genres=genres,
-                facebook_link=facebook_link)
