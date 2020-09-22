@@ -32,6 +32,21 @@ from models import *
 #----------------------------------------------------------------------------#
 # Filters.
 #----------------------------------------------------------------------------#
+def determine_duplicate(array):
+    original_values_list = array
+    duplicates_values_list = [x for x in original_values_list if original_values_list.count(x) > 1]
+
+    index = -1
+    indeces=[]
+    for i in duplicates_values_list:
+        for s, a in enumerate(original_values_list):
+            if i == a:
+                if int(index) < int(s):
+                    index = s
+                    indeces.append(s)
+                    break
+                else:
+                    pass
 
 def format_datetime(value, format='medium'):
   date = dateutil.parser.parse(value)
