@@ -59,24 +59,45 @@ def index():
 def venues():
   # TODO: replace with real venues data.
   #       num_shows should be aggregated based on number of upcoming shows per venue.
-  venues_areas = Venue.query.with_entities(func.count(Venue.id),Venue.city,Venue.state).group_by(Venue.city,Venue.state).all()
-  print(venues_areas)
+  venues_areas = db.session.query(func.count(Venue.id), Venue.city, Venue.state).group_by(Venue.city, Venue.state).all()
+  # print(venues_areas)
   data = []
-  for area in venues_areas:
-      venues = Venue.query.filter_by(state=area.state).filter_by(city=area.city).all()
-      venues_data=[]
+  cities = []
+  states = []
+
+  for a in venues_areas:
+      venues = Venue.query.filter_by(state=a.state).filter_by(city=a.city).all()
+      print(venues)
+      venues_data = []
+
       for venue in venues:
           venues_data.append({
-              "id":venue.id,
-              "name":venue.name,
-              "num_upcoming_shows":len(Show.query.filter(Show.venue_id==1).filter(Show.start_time>datetime.now()).all())
+              "id": venue.id,
+              "name": venue.name,
+              "num_upcoming_shows": len(
+                  Show.query.filter(Show.venue_id == 1).filter(Show.start_time > datetime.now()).all())
           })
+          cities.append(a.city)
+          states.append(a.state)
           data.append({
-              "city":area.city,
-              "state":area.state,
-              "venues":venues_data
+              "city": a.city,
+              "state": a.state,
+              "venues": venues_data
 
           })
+  duplictae_cities_list, cities_indices = determine_duplicate(cities)
+  duplictae_states_list, states_indices = determine_duplicate(states)
+  print(duplictae_cities_list, cities_indices)
+  print(duplictae_states_list, states_indices)
+  cities_indices_set = set(cities_indices)
+  intersection = list(cities_indices_set.intersection(states_indices))
+  print(intersection)
+  for city, state in zip(cities, states):
+      if (city == duplictae_cities_list[cities_indices[0]]) and (state == duplictae_states_list[states_indices[0]]):
+          data.pop(intersection[0])
+          break
+  print(data)
+  print(cities, states)
   # data=[{
   #   "city":"New York",
   #   "state": "NY",
