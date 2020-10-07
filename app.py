@@ -14,6 +14,7 @@ from flask_wtf import Form
 from forms import *
 from flask_migrate import Migrate
 from sqlalchemy import func
+import itertools
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -47,6 +48,7 @@ def determine_duplicate(array):
                     break
                 else:
                     pass
+    return duplicates_values_list, indeces
 
 def format_datetime(value, format='medium'):
   date = dateutil.parser.parse(value)
@@ -102,45 +104,17 @@ def venues():
           })
   duplictae_cities_list, cities_indices = determine_duplicate(cities)
   duplictae_states_list, states_indices = determine_duplicate(states)
-  print(duplictae_cities_list, cities_indices)
-  print(duplictae_states_list, states_indices)
+
   cities_indices_set = set(cities_indices)
   intersection = list(cities_indices_set.intersection(states_indices))
-  print(intersection)
+
   for city, state in zip(cities, states):
       if (city == duplictae_cities_list[cities_indices[0]]) and (state == duplictae_states_list[states_indices[0]]):
           data.pop(intersection[0])
           break
-  print(data)
-  print(cities, states)
-  # data=[{
-  #   "city":"New York",
-  #   "state": "NY",
-  #   "venues": [{
-  #     "id": 1,
-  #     "name": "The Musical Hop",
-  #     "num_upcoming_shows": 0,
-  #   }, {
-  #     "id": 3,
-  #     "name": "Park Square Live Music & Coffee",
-  #     "num_upcoming_shows": 1,
-  #   }]
-  # }, {
-  #   "city": "New York",
-  #   "state": "NY",
-  #   "venues": [{
-  #     "id": 2,
-  #     "name": "The Dueling Pianos Bar",
-  #     "num_upcoming_shows": 0,
-  #   },
-  #       {
-  #           "id": 3,
-  #           "name": "Park Square Live Music & Coffee",
-  #           "num_upcoming_shows": 1,
-  #       }
-  #   ]
-  # }]
-  return render_template('pages/venues.html', areas=data);
+
+
+  return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -219,8 +193,7 @@ def show_venue(venue_id):
 @app.route('/venues/create', methods=['GET'])
 def create_venue_form():
   form = VenueForm()
-  # if form.validate_on_submit():
-  #   return redirect(url_for('/venues/create'))
+
 
 
   return render_template('forms/new_venue.html', form=form)
@@ -408,20 +381,7 @@ def edit_artist(artist_id):
       form.website.data = artist.website
       form.seeking_venue.data = artist.seeking_venue
       form.seeking_description.data = artist.seeking_description
-  # artist={
-  #   "id": 4,
-  #   "name": "Guns N Petals",
-  #   "genres": ["Rock n Roll"],
-  #   "city": "San Francisco",
-  #   "state": "CA",
-  #   "phone": "326-123-5000",
-  #   "website": "https://www.gunsnpetalsband.com",
-  #   "facebook_link": "https://www.facebook.com/GunsNPetals",
-  #   "seeking_venue": True,
-  #   "seeking_description": "Looking for shows to perform at in the San Francisco Bay Area!",
-  #   "image_link": "https://images.unsplash.com/photo-1549213783-8284d0336c4f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=300&q=80"
-  # }
-  # TODO: populate form with fields from artist with ID <artist_id>
+
   return render_template('forms/edit_artist.html', form=form, artist=artist)
 
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
@@ -491,20 +451,7 @@ def edit_venue(venue_id):
       form.website.data = venue.website
       form.seeking_talent.data = venue.seeking_talent
       form.seeking_description.data = venue.seeking_description
-  # venue={
-  #   "id": 1,
-  #   "name": "The Musical Hop",
-  #   "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-  #   "address": "1015 Folsom Street",
-  #   "city": "San Francisco",
-  #   "state": "CA",
-  #   "phone": "123-123-1234",
-  #   "website": "https://www.themusicalhop.com",
-  #   "facebook_link": "https://www.facebook.com/TheMusicalHop",
-  #   "seeking_talent": True,
-  #   "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
-  #   "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
-  # }
+
   # TODO: populate form with values from venue with ID <venue_id>
   return render_template('forms/edit_venue.html', form=form, venue=venue)
 
